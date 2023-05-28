@@ -1,32 +1,32 @@
 <!DOCTYPE html>
-<html lang="en"> 
+<html lang="en">
 <head>
     <title>Page and Pen Hub - Flask based book review site</title>
-    
+
     <!-- Meta -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Flask based book review site"> 
-    <link rel="shortcut icon" href="{{ url_for('static', filename='images/icons/favicon.ico') }}"> 
-    
+    <meta name="description" content="Flask based book review site">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/icons/favicon.ico') }}">
+
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css?family=Quicksand:700|Roboto:400,400i,700&display=swap" rel="stylesheet">
-    
-    
+
+
     <!-- FontAwesome JS-->
     <script defer src="{{ url_for('static', filename='fontawesome/js/all.min.js') }}"></script>
 
-    <!-- Theme CSS -->  
+    <!-- Theme CSS -->
     <link id="theme-style" rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
 
-</head> 
+</head>
 
-<body>    
+<body>
 <header class="header mb-5">
         <nav class="navbar navbar-expand-lg navbar-light bg-grey fixed-top">
         <div class="logo-wrapper">
-	                <div class="site-logo"><a class="navbar-brand" href="{{url_for("home")}}"><img class="logo-icon mr-2" src="{{ url_for('static', filename='images/site-logo.svg') }}" alt="logo" ><span class="logo-text">Page and Pen Hub</span></a></div>    
+	                <div class="site-logo"><a class="navbar-brand" href="{{url_for('home')}}"><img class="logo-icon mr-2" src="{{ url_for('static', filename='images/site-logo.svg') }}" alt="logo" ><span class="logo-text">Page and Pen Hub</span></a></div>
         </div>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -40,28 +40,30 @@
                     <div class="book-badge d-inline-block shadow">{{ session['username'][0]}}</div>
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="nav-link" href="{{url_for("logout")}}">Logout</a>
+                    <a class="dropdown-item" href="{{url_for('feedback')}}">Add Feedback</a> <!-- ADD THIS LINE -->
+
+                <a class="nav-link" href="{{url_for('logout')}}">Logout</a>
                 </div>
             </div>
             {% else %}
             <h4 class="nav-item ml-4">
-                    <a class="nav-link" href="{{url_for("login")}}">Login</a>
+                    <a class="nav-link" href="{{url_for('login')}}">Login</a>
                 </h4>
             {% endif %}
 
-            <form class="form-inline my-2 my-lg-0" action="{{url_for("home")}}" method="POST">
-            <input class="form-control mr-sm-2" type="search" placeholder="Enter ISBN, Author, or Title" aria-label="Search" name="input-search">
+            <form class="form-inline my-2 my-lg-0" action="{{url_for('home')}}" method="POST">
+            <input class="form-control mr-sm-2" type="search" placeholder="Enter title or content of feedback" aria-label="Search" name="input-search">
             <button class="btn btn-primary my-2 my-sm-0 btn-sm" type="submit">Search</button>
             </form>
-        
-            
-        
+
+
+
         </div>
         </nav>
     </header><!--//header-->
-    
-	
-{% with messages = get_flashed_messages(with_categories = true)%} 
+
+
+{% with messages = get_flashed_messages(with_categories = true)%}
     {% if messages %}
         {% for category, message in messages%}
             <div class="alert alert-{{ category}} mt-6" role="alert">
@@ -70,7 +72,7 @@
             </p>
         </div>
         {% endfor %}
-        
+
     {% endif %}
 {% endwith %}
 
@@ -90,18 +92,17 @@
 	        <!--/* This template is free as long as you keep the footer attribution link. If you'd like to use the template without the attribution link, you can buy the commercial license via our website: themes.3rdwavemedia.com Thank you for your support. :) */-->
             <small class="copyright">Designed with <i class="fas fa-heart" style="color: #fb866a;"></i> and <i class="fab fa-github" style="color: #fb866a;"></i> </small>
 	    </div>
-	    
+
     </footer>
-       
-    <!-- Javascript -->          
+
+    <!-- Javascript -->
     <script src="{{ url_for('static', filename='plugins/jquery-3.4.1.min.js') }}"></script>
     <script src="{{ url_for('static', filename='plugins/popper.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='plugins/bootstrap/js/bootstrap.min.js') }}"></script>  
-    <script src="{{ url_for('static', filename='plugins/jquery.scrollTo.min.js') }}"></script>  
-    <script src="{{ url_for('static', filename='plugins/back-to-top.js') }}"></script>  
-    
+    <script src="{{ url_for('static', filename='plugins/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='plugins/jquery.scrollTo.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='plugins/back-to-top.js') }}"></script>
+
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
 </body>
-</html> 
-
+</html>

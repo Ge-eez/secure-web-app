@@ -1,77 +1,64 @@
-import csv
 import os
-from sqlalchemy import create_engine
+from sqlalchemy import (
+    create_engine,
+    Table,
+    Column,
+    Integer,
+    String,
+    MetaData,
+    ForeignKey,
+)
 from sqlalchemy.orm import scoped_session, sessionmaker
 from dotenv import load_dotenv
 
 load_dotenv()
 
-
-
 # Set up database
 engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
-def main():
-    global db
-
-    f = open("books.csv") 
-    reader = csv.reader(f) 
-    next(reader, None)
-
-    for isbn, title, author, year in reader:
-        db.execute("INSERT INTO books (isbn, title, author, year) VALUES (:isbn, :title, :author, :year)", 
-                  {"isbn": isbn, 
-                   "title": title, 
-                   "author": author, 
-                   "year": year})
-
-    db.commit()
 
 def create_user_table():
-    global db
-    create_user_table = """
+    user_table = """
     CREATE TABLE users (
           id SERIAL PRIMARY KEY,
-          username VARCHAR NOT NULL unique,
-          email VARCHAR NOT NULL,
+          username VARCHAR NOT NULL,
+          email VARCHAR NOT NULL UNIQUE,
           password VARCHAR NOT NULL
       )
     """
-    db.execute(create_user_table)
+    db.execute(user_table)
     db.commit()
 
-def create_book_table():
-    global db
-    create_book_table = """
-    CREATE TABLE books (
+
+def create_feedback_table():
+    feedback_table = """
+    CREATE TABLE feedbacks (
           id SERIAL PRIMARY KEY,
-          isbn VARCHAR NOT NULL UNIQUE,
           title VARCHAR NOT NULL,
-          author VARCHAR NOT NULL,
-          year VARCHAR NOT NULL
+          content TEXT,
+          attachment VARCHAR,
+          timestamp TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'utc'),
+          user_id INTEGER REFERENCES users
       )
     """
-    db.execute(create_book_table)
+    db.execute(feedback_table)
     db.commit()
 
-def create_review_table():
-    global db
-    create_book_table = """
-    CREATE TABLE reviews (
+
+def create_admin_table():
+    admin_table = """
+    CREATE TABLE admin (
           id SERIAL PRIMARY KEY,
-          review_msg VARCHAR NOT NULL,
-          review_score INTEGER NOT NULL,
-          books_id INTEGER REFERENCES books,
-          users_id INTEGER REFERENCES users
+          username VARCHAR NOT NULL UNIQUE,
+          password VARCHAR NOT NULL
       )
     """
-    db.execute(create_book_table)
+    db.execute(admin_table)
     db.commit()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     create_user_table()
-    create_book_table()
-    create_review_table()
-    main()
+    create_feedback_table()
+    create_admin_table()

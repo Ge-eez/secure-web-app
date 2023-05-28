@@ -1,131 +1,33 @@
-{% extends "base.html" %}   
+{% extends "base.html" %}
 {% block hero%}
     <section class="hero-section mt-6">
 	    <div class="container">
 		    <div class="row">
-			    <div class="col-7 pt-5 mb-5 align-self-center">
+			    <div class="col-12 pt-5 mb-5 align-self-center">
 				    <div class="promo pr-md-3 pr-lg-5">
-					
-				        <div class="add-icon">
-							<a href="#add-comment">
-								<i class='fa fa-plus'></i>
-							</a>
-						 </div>
-						 <h1 class="headline mb-3">
-						    {{result['title']}}   
+                        <div class="subheadline mb-4">
+						    Submitted by: {{feedback['user_id']}}
+					    </div><!--//subheading-->
+						<h1 class="headline mb-3">
+						    {{feedback['title']}}
 					    </h1><!--//headline-->
-					    <div class="subheadline mb-4">
-						    {{result['author']}}
+                        <div class="subheadline mb-4">
+						    {{feedback['content']}}
 					    </div><!--//subheading-->
 						<div class="subheadline mb-4">
-						    {{result['year']}}
+						    Submitted on: {{feedback['timestamp']}}
 					    </div>
-						<div class="subheadline mb-4">
-								Average Rating: {{'%0.2f'|format(result['average score']|float)  }}
-						</div>
-						<div class="subheadline mb-4">
-							Number of Ratings: {{ result['review count']}}
-						</div>
-						<a class="btn btn-secondary" href="{{url_for('api', isbn=result['isbn'])}}">JSON File</a>
-						
-
+                        <div class="subheadline mb-4">
+						    Attachment:
+                            {% if feedback['attachment'] %}
+                                <a href="{{feedback['attachment']}}">Download</a>
+                            {% else %}
+                                No attachment provided.
+                            {% endif %}
+					    </div><!--//subheading-->
 				    </div><!--//promo-->
-			    </div><!--col-->
-			    <div class="col-5 mb-5 mt-5">
-				    <div class="book-cover-holder">
-					    {% if result["thumbnail"] %}
-							<img class="img-fluid book-cover float-right" src="{{ result["thumbnail"] }}" alt="book cover" >
-						{% else %}
-							<img class="img-fluid book-cover float-right" src="{{ url_for('static', filename='images/devbook-cover.jpeg') }}" alt="book cover" >
-						
-						{% endif %}
-						<!--//<div class="book-badge d-inline-block shadow">New<br>Release</div>-->
-				    </div><!--//book-cover-holder-->
 			    </div><!--col-->
 		    </div><!--//row-->
 	    </div><!--//container-->
     </section><!--//hero-section-->
 {% endblock hero%}
-    
-{% block reviews%}
-
-	  <div class="container">
-    <div class="row pt-4 rounded-pill" id="details">
-        <div class="col-md-8">
-          
-		  <h3>Comments</h3>
-					    
-          
-		  <section id="reviews-section" class="reviews-section py-5">
-			<div class="container">
-				<div class="row justify-content-center">
-				{% if not(comment_list)%}
-					<h4 class="item-heading">Be the first one to comment below</h4>
-		  
-				{% endif %}
-				{% for item in comment_list %}
-          
-					<div class="item col-12 col-lg-4 p-3 mb-4">
-						<div class="item-inner theme-bg-light rounded p-4">
-							{% if item.u_id == session['users_id']%}
-								<a class='text-danger del-rev' href="{{url_for('del_review', bookid=bookid, review_id=item.r_id)}}">
-									<i class='fa fa-times-circle'></i>
-								</a>
-							{% endif %}
-							{% if item.review_score == 5 %}
-								<span class="badge badge-success float-right">rated {{item.review_score}}</span>
-							{% elif item.review_score == 4 or item.review_score == 3 %}
-								<span class="badge badge-warning float-right">rated {{item.review_score}}</span>
-							{% elif item.review_score == 2 or item.review_score == 1 %}
-								<span class="badge badge-danger float-right">rated {{item.review_score}}</span>
-							{% endif %}
-							<blockquote class="quote">
-								{{item.review_msg}}
-							</blockquote><!--//item-->
-							<div class="source media flex-column flex-md-row align-items-center">
-								<div class="source-info media-body text-right">
-									<div class="source-name">{{ item.username }}</div>
-								</div>
-							</div><!--//source-->
-
-							<div class="icon-holder"><i class='fa fa-quote-left'></i></div>
-						</div><!--//inner-->
-					</div><!--//item-->
-				{% endfor %}
-				</div><!--//row-->
-			</div><!--//container-->
-		  </section>
-          <hr>
-
-          <form action="{{url_for('details', bookid=bookid)}}" method="post" id="add-comment">
-            <div class="form-group">
-               <label for="Rating">Rating</label>
-               <select class="form-control" id="Rating" name="rating">
-                 <option value="1">1</option>
-                 <option value="2">2</option>
-                 <option value="3">3</option>
-                 <option value="4">4</option>
-                 <option selected value="5">5</option>
-               </select>
-             </div>
-             <div class="form-group">
-               <label for="Comments">Comments</label>
-               <textarea class="form-control" id="Comments" rows="8" name="comments" required></textarea>
-             </div>
-             <div class="form-group">
-                <button type="submit" class="btn btn-primary">Post</button>
-             </div>
-          </form>
-        </div>
-        <div class="col-md-4">
-
-        </div>
-  </div>
-
-{% endblock reviews%}
-    
-    
-   
-
-    
-

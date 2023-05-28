@@ -1,3 +1,4 @@
 bin/
 flask_session/
 lib/
+.env
