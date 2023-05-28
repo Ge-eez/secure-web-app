@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content%}
+
+	<section id="reviews-section" class="reviews-section py-5">
+	    <div class="container">
+		    <h2 class="section-heading text-center">Random mix</h2>
+		    <div class="section-intro text-center single-col-max mx-auto mb-5">Welcome to Page and Pen Hub</div>
+		    <div class="row justify-content-center">
+			{% for book in books %}
+			<div class="item col-12 col-md-6 col-lg-4 col-xl-3 p-3 mb-4">
+				    <div class="item-inner theme-bg-light rounded p-4">
+					    
+					    
+				        <div class="source media flex-row align-items-center">
+							<div class="source-profile mr-md-3">
+							    
+						        <div class="source-title">ISBN</div>
+						        <div class="soure-title">Title</div>
+						        <div class="source-title">Author</div>
+						        <div class="soure-title">Year</div>
+						    </div>
+					        <div class="source-info media-body  text-left">
+							
+						        <div class="source-name">{{book.isbn}}</div>
+						        <div class="soure-name">{{book.title}}</div>
+						        <div class="source-name">{{book.author}}</div>
+						        <div class="soure-name">{{book.year}}</div>
+						    </div>
+				        </div><!--//source-->
+						<div class="details-holder">
+							<a href= "details/{{book.id}}"><i class='fa fa-arrow-circle-right'></i></a>
+						</div>
+						
+				        <div class="icon-holder-book"><i class='fa fa-book-open'></i></div>
+				    </div><!--//inner-->
+			    </div><!--//item-->
+			{% endfor %}
+			
+			    
+		    </div><!--//row-->
+	    </div><!--//container-->
+    </section>
+    
+{% endblock content%}
