@@ -6,25 +6,34 @@
 			    <div class="col-12 pt-5 mb-5 align-self-center">
 				    <div class="promo pr-md-3 pr-lg-5">
                         <div class="subheadline mb-4">
-						    Submitted by: {{feedback['user_id']}}
-					    </div><!--//subheading-->
+						    Submitted by: {{ feedback['user_id'] }}
+					    </div><!--//subheading->
 						<h1 class="headline mb-3">
-						    {{feedback['title']}}
+						    {{ feedback['title'] }}
 					    </h1><!--//headline-->
                         <div class="subheadline mb-4">
-						    {{feedback['content']}}
+						    {{ feedback['content'] }}
 					    </div><!--//subheading-->
 						<div class="subheadline mb-4">
-						    Submitted on: {{feedback['timestamp']}}
+						    Submitted on: {{ feedback['timestamp'].strftime('%B %d, %Y') }}
 					    </div>
                         <div class="subheadline mb-4">
 						    Attachment:
                             {% if feedback['attachment'] %}
-                                <a href="{{feedback['attachment']}}">Download</a>
+                                <a href="{{ feedback['attachment'] }}">Download</a>
                             {% else %}
                                 No attachment provided.
                             {% endif %}
 					    </div><!--//subheading-->
+                        {% if session['role'] == 'admin' %}
+                            <div>
+                                <a href="{{ url_for('mark_reviewed', feedback_id=feedback['id']) }}" class="btn btn-secondary">Mark as Reviewed</a>
+                            </div>
+						{% elif session['users_id'] == feedback['user_id'] %}
+                            <div>
+                                <a href="{{ url_for('feedback', feedback_id=feedback['id']) }}" class="btn btn-primary">Edit</a>
+                            </div>
+                        {% endif %}
 				    </div><!--//promo-->
 			    </div><!--col-->
 		    </div><!--//row-->

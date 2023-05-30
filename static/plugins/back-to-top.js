@@ -2,7 +2,7 @@
 //** Available/ usage terms at http://www.dynamicdrive.com (March 30th, 09')
 //** v1.1 (April 7th, 09'):
 //** 1) Adds ability to scroll to an absolute position (from top of page) or specific element on the page instead.
-//** 2) Fixes scroll animation not working in Opera. 
+//** 2) Fixes scroll animation not working in Opera.
 
 
 var scrolltotop={
@@ -11,8 +11,8 @@ var scrolltotop={
 	setting: {startline:100, scrollto: 0, scrollduration:1000, fadeduration:[500, 100]},
 	//controlHTML: '<i class="fa fa-angle-up"></i>', //HTML for control, which is auto wrapped in DIV w/ ID="topcontrol"
 	controlHTML: '<i class="fas fa-chevron-up"></i>', //Updated to work with FontAwesome 5
-	
-	
+
+
 	controlattrs: {offsetx:5, offsety:5}, //offset of control relative to right/ bottom of window corner
 	anchorkeyword: '#top', //Enter href value of HTML anchors on the page that should also act as "Scroll Up" links
 
@@ -50,7 +50,7 @@ var scrolltotop={
 			this.state.isvisible=false
 		}
 	},
-	
+
 	init:function(){
 		jQuery(document).ready(function($){
 			var mainobj=scrolltotop

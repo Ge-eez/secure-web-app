@@ -2,14 +2,14 @@
 {% block content %}
 <div class="container">
     <h2>Add Feedback</h2>
-    <form action="{{ url_for('feedback') }}" method="post" enctype="multipart/form-data">
+    <form action="{{ url_for('feedback', feedback_id=feedback.id if feedback else None) }}" method="post" enctype="multipart/form-data">
         <div class="form-group">
             <label for="title">Title:</label>
-            <input type="text" id="title" name="title" required class="form-control">
+            <input type="text" id="title" name="title" required class="form-control" value="{{ feedback.title if feedback else '' }}">
         </div>
         <div class="form-group">
             <label for="content">Content:</label>
-            <textarea id="content" name="content" class="form-control" rows="5" required></textarea>
+            <textarea id="content" name="content" class="form-control" rows="5" required>{{ feedback.content if feedback else '' }}</textarea>
         </div>
         <div class="form-group">
             <label for="attachment">Attachment:</label>

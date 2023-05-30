@@ -33,7 +33,7 @@ a.theme-link {
 	@include transition (all 0.4s ease-in-out);
 	@include border-radius(2rem);
 	border: none;
-	
+
 	&:hover, &:active, &:focus {
 		box-shadow: 0 10px 20px -4px rgba(0,0,0,0.05);
 	}
@@ -42,7 +42,7 @@ a.theme-link {
 .btn-submit {
 	@include border-radius(0.25rem);
 	padding: 0.875rem 1.5rem;
-	
+
 }
 
 .btn:focus, .btn.focus {
@@ -122,7 +122,7 @@ a.theme-link {
     padding-top: 0.5rem;
     font-weight: 300;
     font-size: 1rem;
-    
+
     &:hover {
         background: lighten($theme-text-color-primary, 10%);
         color: #fff;
@@ -164,8 +164,6 @@ a.theme-link {
 	.copyright {
 		font-size: 0.875rem;
 	}
-	
-	
+
+
 }
-
-

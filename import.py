@@ -20,12 +20,8 @@ db = scoped_session(sessionmaker(bind=engine))
 
 def create_user_table():
     user_table = """
-    CREATE TABLE users (
-          id SERIAL PRIMARY KEY,
-          username VARCHAR NOT NULL,
-          email VARCHAR NOT NULL UNIQUE,
-          password VARCHAR NOT NULL
-      )
+
+    DROP TABLE users CASCADE
     """
     db.execute(user_table)
     db.commit()
@@ -33,14 +29,7 @@ def create_user_table():
 
 def create_feedback_table():
     feedback_table = """
-    CREATE TABLE feedbacks (
-          id SERIAL PRIMARY KEY,
-          title VARCHAR NOT NULL,
-          content TEXT,
-          attachment VARCHAR,
-          timestamp TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'utc'),
-          user_id INTEGER REFERENCES users
-      )
+    DROP TABLE feedbacks;
     """
     db.execute(feedback_table)
     db.commit()
@@ -48,11 +37,7 @@ def create_feedback_table():
 
 def create_admin_table():
     admin_table = """
-    CREATE TABLE admin (
-          id SERIAL PRIMARY KEY,
-          username VARCHAR NOT NULL UNIQUE,
-          password VARCHAR NOT NULL
-      )
+    DROP TABLE admin
     """
     db.execute(admin_table)
     db.commit()

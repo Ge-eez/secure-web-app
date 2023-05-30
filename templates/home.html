@@ -14,12 +14,14 @@
 
 				        <div class="source media flex-row align-items-center">
 							<div class="source-profile mr-md-3">
-
+						        <div class="soure-title">Author</div>
 						        <div class="soure-title">Title</div>
+						        <div class="soure-title">Date</div>
 						    </div>
 					        <div class="source-info media-body  text-left">
-
+						        <div class="soure-name">{{feedback.user.username}}</div>
 						        <div class="soure-name">{{feedback.title}}</div>
+						        <div class="soure-name">{{feedback.timestamp.strftime('%B %d, %Y ') }}</div>
 						    </div>
 				        </div><!--//source-->
 						<div class="details-holder">

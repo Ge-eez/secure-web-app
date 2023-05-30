@@ -39,16 +39,16 @@
 
 	}
 	.source {
-	
+
 		vertical-align:middle;
 		color: $theme-text-color-light;
 		font-size: 0.875rem;
-		
+
 	}
 	.source-profile {
 		width: 60px;
 		height: 60px;
-		
+
 	}
 	.carousel-indicators {
 		bottom: -4rem;
@@ -61,7 +61,7 @@
 		    margin-left: 5px;
 		    margin-right: 5px;
 		}
-		
+
 	}
 }
 
@@ -102,12 +102,12 @@
 .content-section {
 	.key-points-list {
 		font-size: 1.125rem;
-		
+
 		li {
 			margin-bottom: 1rem;
 		}
 	}
-	
+
 	.fa-check-circle {
 		color: $theme-color-tick;
 	}
@@ -136,7 +136,7 @@
 		height: 100%;
 		position: relative;
 	}
-	
+
 	.icon-holder {
 		position: absolute;
 		left: 50%;
@@ -159,13 +159,13 @@
 	}
 	.quote {
 		font-style:italic;
-		
+
 	}
 }
 
 .author-section {
 	color: #fff;
-	
+
 	.author-pic {
 		width: 150px;
 	    height: 150px;
@@ -220,15 +220,15 @@
 }
 
 // Medium devices (tablets, less than 992px)
-@media (max-width: 991.98px) { 
+@media (max-width: 991.98px) {
 	.section-heading {
 		font-size: 1.75rem;
 	}
-	
+
 	.section-intro {
 		font-size: 1.125rem;
 	}
-	
+
 	.hero-section {
 		.headline {
 			font-size: 2rem;
@@ -237,14 +237,14 @@
 		.subheadline {
 			font-size: 1.125rem;
 		}
-	
+
 	}
 	.book-cover-holder .book-badge {
 		width: 100px;
 		height: 100px;
 		padding-top: 25px;
 		font-size: 1.25rem;
-		
+
 	}
 }
 
@@ -254,4 +254,3 @@
 	    width: 400px;
 	}
 }
-

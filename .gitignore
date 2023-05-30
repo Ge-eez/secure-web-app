@@ -1,4 +1,6 @@
 bin/
 flask_session/
 lib/
+__pycache__/
+.vscode/
 .env
