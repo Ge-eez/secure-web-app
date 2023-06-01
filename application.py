@@ -1,21 +1,15 @@
 import os
-from sqlalchemy import desc, func
-from flask_sqlalchemy import SQLAlchemy
-
-from flask import Flask, session, render_template, url_for, flash, redirect, request
-from flask_session import Session
-from functools import wraps
-from forms import ExtendedRegisterForm
 from datetime import datetime
-from flask_migrate import Migrate
-from flask_security import (
-    Security,
-    SQLAlchemyUserDatastore,
-    auth_required,
-    current_user,
-    roles_required,
-)
 
+from flask import Flask, flash, redirect, render_template, request, url_for
+from flask_migrate import Migrate
+from flask_security import (Security, SQLAlchemyUserDatastore, auth_required,
+                            current_user, roles_required)
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import desc, func
+
+from flask_session import Session
+from forms import ExtendedRegisterForm
 
 app = Flask(__name__)
 
@@ -33,28 +27,11 @@ db = SQLAlchemy(app)
 
 
 migrate = Migrate(app, db)
-from models import Feedback, User, Role
+from models import Feedback, Role, User
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore, register_form=ExtendedRegisterForm)
 Session(app)
-
-
-def getData(feedbackid=0):
-    data = {}
-    feedback = Feedback.query.get(feedbackid)
-    if feedback:
-        data["id"] = feedback.id
-        data["title"] = feedback.title
-        data["content"] = feedback.content
-        data["author"] = feedback.user_id
-        data["timestamp"] = feedback.timestamp
-        data["attachment"] = feedback.attachment
-        data["reviewed"] = feedback.reviewed
-        data["review_timestamp"] = feedback.review_timestamp
-    else:
-        flash(f"Invalid feedback id", "danger")
-    return data
 
 
 @app.route("/", methods=["GET", "POST"])

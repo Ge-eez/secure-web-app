@@ -1,8 +1,9 @@
-from application import db
-from sqlalchemy_utils import UUIDType
 import uuid
-from flask_security import UserMixin, RoleMixin
 
+from flask_security import RoleMixin, UserMixin
+from sqlalchemy_utils import UUIDType
+
+from application import db
 
 roles_users = db.Table(
     "roles_users",
