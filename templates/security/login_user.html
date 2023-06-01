@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content%}
+
+    <div class="container mt-5">
+        <div class="row mt-6">
+            <div class="col-6">
+                <div class="login-form">
+                    <legend class="card-title mb-4 mt-1  text-center">Login</legend>
+                    <form method='POST' action=''>
+                        {{ login_user_form.hidden_tag() }}
+
+                        {% if login_user_form.errors %}
+                            <div class="alert alert-danger">
+                                <ul>
+                                    {% for field, errors in login_user_form.errors.items() %}
+                                        {% for error in errors %}
+                                            <li>{{ field }}: {{ error }}</li>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+
+                        <div class="form-group">
+                        {{ login_user_form.email.label }}
+                            {{ login_user_form.email(class='form-control') }}
+                        </div> <!-- form-group// -->
+                        <div class="form-group">
+                        {{ login_user_form.password.label }}
+                            {{ login_user_form.password(class='form-control') }}
+                        </div> <!-- form-group// -->
+                        <div class="form-group">
+                        </div> <!-- form-group// -->
+                        <div class="form-group">
+                            {{ login_user_form.submit(class='btn btn-primary btn-block') }}
+                        </div> <!-- form-group// -->
+                        <input
+                            type="hidden"
+                            name="next"
+                            value="{{ request.args.get('next', '') }}"
+                        />
+                        <p class="text-center"><a href="{{url_for('security.register', next=request.args.get('next', ''))}}" class="">Don't have an account?</a></p>
+                    </form>
+                </div>
+            </div>
+            <div class="col-6"><!--image--></div>
+        </div>
+    </div>
+{% endblock %}

@@ -14,13 +14,14 @@
             <tr>
               <th scope="col">Title</th>
               <th scope="col">Author</th>
+              <th scope="col">Details</th>
             </tr>
           </thead>
           <tbody>
             {% for item in result %}
             <tr>
               <td>{{item.title}}</td>
-              <td>{{item.user_id}}</td>
+              <td>{{item.user.username}}</td>
               <td><a href= "details/{{item.id}}">Details</a></td>
             </tr>
             {% endfor %}

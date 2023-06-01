@@ -1,15 +1,35 @@
-import os
-from application import db, bcrypt
+from application import db
+from sqlalchemy_utils import UUIDType
+import uuid
+from flask_security import UserMixin, RoleMixin
 
 
-class User(db.Model):
-    __tablename__ = "users"
+roles_users = db.Table(
+    "roles_users",
+    db.Column("user_id", db.Integer(), db.ForeignKey("user.id")),
+    db.Column("role_id", db.Integer(), db.ForeignKey("role.id")),
+)
 
+
+class Role(db.Model, RoleMixin):
+    __tablename__ = "role"
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(80), unique=True)
+    description = db.Column(db.String(255))
+
+
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String, nullable=False)
-    email = db.Column(db.String, unique=True, nullable=False)
-    password = db.Column(db.String, nullable=False)
-    feedbacks = db.relationship("Feedback", backref="user", lazy=True)
+    fs_uniquifier = db.Column(
+        UUIDType(binary=False), default=uuid.uuid4, unique=True, nullable=False
+    )
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(60), nullable=False)
+    username = db.Column(db.String(200), nullable=True)
+    roles = db.relationship(
+        "Role", secondary=roles_users, backref=db.backref("user", lazy="dynamic")
+    )
+    active = db.Column(db.Boolean())
 
 
 class Feedback(db.Model):
@@ -20,31 +40,10 @@ class Feedback(db.Model):
     content = db.Column(db.Text)
     attachment = db.Column(db.String)
     timestamp = db.Column(db.DateTime, server_default=db.func.now())
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     reviewed = db.Column(db.Boolean, default=False)
     review_timestamp = db.Column(db.DateTime)
-
-
-class Admin(db.Model):
-    __tablename__ = "admin"
-
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String, nullable=False, unique=True)
-    password = db.Column(db.String, nullable=False)
+    user = db.relationship("User", backref=db.backref("feedbacks", lazy=True))
 
 
 db.create_all()
-
-# Hash the password
-hashed_password = bcrypt.generate_password_hash(os.getenv("ADMIN_PASSWORD")).decode(
-    "utf-8"
-)
-
-# Create a new admin instance
-new_admin = Admin(username="admin", password=hashed_password)
-
-# Add the new admin to the session
-db.session.add(new_admin)
-
-# Commit the session to save the new admin in the database
-db.session.commit()

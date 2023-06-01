@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content%}
+
+    <div class="container mt-5">
+        <div class="row mt-6">
+            <div class="col-6">
+                <div class="login-form">
+                    <legend class="card-title mb-4 mt-1  text-center">Join Today</legend>
+                    <form method='POST' action=''>
+                        {{ register_user_form.hidden_tag() }}
+
+                        {% if register_user_form.errors %}
+                            <div class="alert alert-danger">
+                                <ul>
+                                    {% for field, errors in register_user_form.errors.items() %}
+                                        {% for error in errors %}
+                                            <li>{{ field }}: {{ error }}</li>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+
+                        <div class="form-group">
+                            {{ register_user_form.username.label }}
+                            {{ register_user_form.username(class='form-control') }}
+                        </div> <!-- form-group// -->
+                        <div class="form-group">
+                            {{ register_user_form.email.label }}
+                            {{ register_user_form.email(class='form-control') }}
+                        </div> <!-- form-group// -->
+                        <div class="form-group">
+                            {{ register_user_form.password.label }}
+                            {{ register_user_form.password(class='form-control') }}
+                        </div> <!-- form-group// -->
+                        <div class="form-group">
+                            {{ register_user_form.password_confirm.label }}
+                            {{ register_user_form.password_confirm(class='form-control') }}
+                        </div> <!-- form-group// -->
+                        <div class="form-group">
+                            {{ register_user_form.submit(class='btn btn-primary btn-block') }}
+                        </div> <!-- form-group// -->
+                        <input
+                            type="hidden"
+                            name="next"
+                            value="{{ request.args.get('next', '') }}"
+                        />
+                        <p class="text-center"><a href="{{url_for('security.login')}}" class="">Already have an account?</a></p>
+                    </form>
+                </div>
+            </div>
+            <div class="col-6"><!--image--></div>
+        </div>
+    </div>
+{% endblock %}

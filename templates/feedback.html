@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container">
-    <h2>Add Feedback</h2>
+    <h2>{{ 'Edit' if feedback else 'Add' }} Feedback</h2>
     <form action="{{ url_for('feedback', feedback_id=feedback.id if feedback else None) }}" method="post" enctype="multipart/form-data">
         <div class="form-group">
             <label for="title">Title:</label>

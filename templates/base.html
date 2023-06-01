@@ -34,24 +34,23 @@
 
         <div class="collapse navbar-collapse ml-4 flex-row-reverse" id="navbarSupportedContent">
 
-            {% if session['logged_in'] == True%}
+            {% if current_user.is_authenticated %}
             <div class="nav-item dropdown mr-4 ml-5">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <div class="book-badge d-inline-block shadow">{{ session['username'][0]}}</div>
+                    <div class="book-badge d-inline-block shadow">{{ current_user.username[0]}}</div>
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="nav-link" href="{{url_for('feedback')}}">Add Feedback</a> <!-- ADD THIS LINE -->
-                    {% if session["role"] == "admin" %}
+                    <a class="nav-link" href="{{url_for('feedback')}}">Add Feedback</a>
+                    {% if current_user.role == "admin" %}
                       <a class="nav-link" href="{{ url_for('users') }}">Users</a>
-                      {% endif %}
-
-                <a class="nav-link" href="{{url_for('logout')}}">Logout</a>
+                    {% endif %}
+                    <a class="nav-link" href="{{url_for('security.logout')}}">Logout</a>
                 </div>
             </div>
             {% else %}
             <h4 class="nav-item ml-4">
-                    <a class="nav-link" href="{{url_for('login')}}">Login</a>
-                </h4>
+                    <a class="nav-link" href="{{url_for('security.login')}}">Login</a>
+            </h4>
             {% endif %}
 
             <form class="form-inline my-2 my-lg-0" action="{{url_for('home')}}" method="POST">

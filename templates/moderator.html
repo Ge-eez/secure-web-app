@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2>Moderator Page</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Feedbacks</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>
+                    <ul>
+                    {% for feedback in user.feedbacks %}
+                        <li>{{ feedback.title }}: {{ feedback.content }}</li>
+                    {% endfor %}
+                    </ul>
+                </td>
+                <td>
+                    <a href="{{ url_for('disable_user', user_id=user.id) }}" class="btn btn-danger">Disable</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

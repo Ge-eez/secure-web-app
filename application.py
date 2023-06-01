@@ -5,25 +5,39 @@ from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, session, render_template, url_for, flash, redirect, request
 from flask_session import Session
 from functools import wraps
-from forms import RegistrationForm, LoginForm
-from flask_bcrypt import Bcrypt
+from forms import ExtendedRegisterForm
 from datetime import datetime
+from flask_migrate import Migrate
+from flask_security import (
+    Security,
+    SQLAlchemyUserDatastore,
+    auth_required,
+    current_user,
+    roles_required,
+)
 
 
 app = Flask(__name__)
 
 # Configure session to use filesystem
+app.config["SECURITY_URL_PREFIX"] = "/"
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
-app.config["SECRET_KEY"] = "2f217088a246a54d6da5d92c50b499df"
-bcrypt = Bcrypt(app)
-Session(app)
-
+app.config["SECURITY_PASSWORD_SALT"] = "my_precious_two"
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
+app.config["SECURITY_REGISTERABLE"] = True
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+
 db = SQLAlchemy(app)
 
-from models import User, Feedback, Admin
+
+migrate = Migrate(app, db)
+from models import Feedback, User, Role
+
+user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+security = Security(app, user_datastore, register_form=ExtendedRegisterForm)
+Session(app)
 
 
 def getData(feedbackid=0):
@@ -43,34 +57,11 @@ def getData(feedbackid=0):
     return data
 
 
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if ("logged_in" not in session) or (session["logged_in"] == False):
-            next = request.url
-            return redirect(url_for("login", next=next))
-        return f(*args, **kwargs)
-
-    return decorated_function
-
-
-def logout_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if ("logged_in" in session) and (session["logged_in"] == True):
-            return redirect(url_for("home"))
-        return f(*args, **kwargs)
-
-    return decorated_function
-
-
 @app.route("/", methods=["GET", "POST"])
 @app.route("/home", methods=["GET", "POST"])
+@auth_required("session")
 def home():
-    if "logged_in" not in session or not session["logged_in"]:
-        return redirect(url_for("login"))
-
-    if session["role"] == "admin":
+    if current_user.has_role("admin"):
         feedbacks = (
             db.session.query(Feedback, User.username)
             .join(User)
@@ -81,12 +72,10 @@ def home():
         feedbacks = (
             db.session.query(Feedback)
             .join(User)
-            .filter(Feedback.user_id == session["user_id"])
+            .filter(Feedback.user_id == current_user.id)
             .order_by(desc(Feedback.timestamp))
             .all()
         )
-
-    print(feedbacks)
 
     if request.method == "GET":
         return render_template("home.html", feedbacks=feedbacks)
@@ -97,7 +86,7 @@ def home():
             return render_template("home.html", feedbacks=feedbacks)
 
         try:
-            if session["role"] == "admin":
+            if current_user.role == "admin":
                 result = (
                     db.session.query(Feedback)
                     .filter(
@@ -110,7 +99,7 @@ def home():
                 result = (
                     db.session.query(Feedback)
                     .filter(
-                        Feedback.user_id == session["user_id"],
+                        Feedback.user_id == current_user.id,
                         (
                             func.lower(Feedback.content).like(f"%{query.lower()}%")
                             | func.lower(Feedback.title).like(f"%{query.lower()}%")
@@ -131,76 +120,28 @@ def home():
         return render_template("list.html", result=result, key=query)
 
 
-@app.route("/register", methods=["GET", "POST"])
-@logout_required
-def register():
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        hashed_password = bcrypt.generate_password_hash(form.password.data).decode(
-            "utf-8"
-        )
-        next_url = form.next.data
-        user = User(
-            username=form.username.data, email=form.email.data, password=hashed_password
-        )
-
-        try:
-            db.session.add(user)
-            db.session.commit()
-            flash(f"Account created for {form.username.data}!", "success")
-
-        except Exception as e:
-            print(e)
-            flash(f"Account not created!", "danger")
-
-        return redirect(url_for("login", next=next_url))
-    return render_template("register.html", form=form)
-
-
-@app.route("/login", methods=["GET", "POST"])
-@logout_required
-def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        try:
-            next_url = form.next.data
-            user = User.query.filter_by(email=form.email.data).first()
-
-            if user is None:
-                flash(f"User does not exists", "danger")
-            elif not bcrypt.check_password_hash(user.password, form.password.data):
-                flash(f"Invalid Login", "danger")
-            else:
-                admin = Admin.query.filter_by(username=form.email.data).first()
-                if admin is not None:
-                    session["role"] = "admin"
-                else:
-                    session["role"] = "user"
-
-                flash(f"Logged in successfully", "success")
-                session["user_id"] = user.id
-                session["email"] = user.email
-                session["username"] = user.username
-                session["logged_in"] = True
-
-                if next_url:
-                    return redirect(next_url)
-
-        except Exception as e:
-            flash(f"Connection Error {e}", "warning")
-
-        return redirect(url_for("home"))
-
-    return render_template("login.html", form=form)
+@app.route("/moderator")
+@roles_required(
+    "admin"
+)  # ensure only users with the 'admin' role can access this route
+def moderator():
+    users = User.query.all()  # replace with your actual query to get all users
+    return render_template("moderator.html", users=users)
 
 
 @app.route("/feedback", methods=["GET", "POST"])
 @app.route("/feedback/<int:feedback_id>/edit", methods=["GET", "POST"])
-@login_required
+@auth_required("session")
 def feedback(feedback_id=None):
     feedback = None
     if feedback_id:
-        feedback = Feedback.query.get(feedback_id)
+        feedback = (
+            db.session.query(Feedback)
+            .join(User)
+            .filter(Feedback.user_id == current_user.id, Feedback.id == feedback_id)
+            .order_by(desc(Feedback.timestamp))
+            .first()
+        )
         if not feedback:
             flash("Feedback not found.", "error")
             return redirect(url_for("home"))
@@ -208,7 +149,7 @@ def feedback(feedback_id=None):
     if request.method == "POST":
         title = request.form.get("title")
         content = request.form.get("content")
-        user_id = session.get("user_id")
+        user_id = current_user.id
 
         if feedback_id and feedback:
             # Update the existing feedback
@@ -227,76 +168,59 @@ def feedback(feedback_id=None):
     return render_template("feedback.html", feedback=feedback)
 
 
-@app.route("/users", methods=["GET", "POST"])
-def users():
-    if "logged_in" not in session or not session["logged_in"]:
-        return redirect(url_for("login"))
-
-    if session["role"] != "admin":
-        flash(f"Unauthorized access", "danger")
-        return redirect(url_for("home"))
-
-    users = User.query.all()
-
-    return render_template("users.html", users=users)
-
-
-@app.route("/mark_reviewed/<int:feedback_id>", methods=["GET", "POST"])
-@login_required
+@app.route("/mark_reviewed/<int:feedback_id>", methods=["POST"])
+@auth_required("session")
+@roles_required("admin")
 def mark_reviewed(feedback_id):
-    if request.method == "POST":
-        feedback = Feedback.query.get(feedback_id)
+    feedback = Feedback.query.get(feedback_id)
+    if feedback:
         feedback.reviewed = True
         feedback.review_timestamp = datetime.now()  # don't forget to import datetime
         db.session.commit()
-
         flash("Feedback marked as reviewed!", "success")
-        return redirect(url_for("feedback", feedback_id=feedback_id))
-
-    feedback = Feedback.query.get(feedback_id)
-    return render_template("feedback.html", feedback=feedback)
-
-
-@app.route("/logout")
-def logout():
-    # Forget any user_id
-    session.clear()
-    session["logged_in"] = False
-
-    # Redirect user to login index
-    return redirect(url_for("home"))
+    else:
+        flash("Feedback not found.", "error")
+    return redirect(url_for("details", feedback_id=feedback_id))
 
 
-@app.route("/details/<int:feedback_id>", methods=["GET", "POST"])
-@login_required
+@app.route("/details/<int:feedback_id>", methods=["GET"])
+@auth_required("session")
 def details(feedback_id):
     feedback = Feedback.query.get(feedback_id)
-    if feedback is None:
+    if feedback is None or feedback.user_id != current_user.id:
         flash("Feedback not found.", "error")
         return redirect(url_for("home"))
 
-    feedback_data = feedback.__dict__
-    if "_sa_instance_state" in feedback_data:
-        del feedback_data["_sa_instance_state"]
-    if "comments" not in feedback_data:
-        feedback_data["comments"] = []
-    return render_template(
-        "details.html", feedback=feedback_data, feedback_id=feedback_id
-    )
+    return render_template("details.html", feedback=feedback, feedback_id=feedback_id)
 
 
-@app.route("/del_feedback/<int:feedback_id>")
-@login_required
+@app.route("/del_feedback/<int:feedback_id>", methods=["POST"])
+@auth_required("session")
 def del_feedback(feedback_id):
     feedback = Feedback.query.get(feedback_id)
-    if feedback is None:
+    if feedback is None or feedback.user_id != current_user.id:
         flash("Feedback not found.", "error")
         return redirect(url_for("home"))
     db.session.delete(feedback)
     db.session.commit()
+    flash("Feedback deleted successfully!", "success")
     return redirect(
         url_for("home")
     )  # Change this to your desired route after deleting feedback
+
+
+@app.route("/disable_user/<int:user_id>", methods=["POST"])
+@auth_required("session")
+@roles_required("admin")
+def disable_user(user_id):
+    user = User.query.get(user_id)
+    if user:
+        user.active = False
+        db.session.commit()
+        flash(f"User {user.username} disabled successfully!", "success")
+    else:
+        flash("User not found.", "error")
+    return redirect(url_for("moderator"))
 
 
 @app.errorhandler(404)
