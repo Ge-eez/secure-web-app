@@ -47,6 +47,16 @@ The application is designed to protect against most common web vulnerabilities, 
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
+### PREPARED BY
+
+Name | ID
+--- | ---
+Dagmawit Getachew  | ATR/3566/11
+Deginet Haile  | ATR/1789/11
+Elshadai Kassu  | ATR/1831/11
+Meti Leggese  | ATR/1710/11
+Tewodros Mesfin  | ETR/1103/11
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
