@@ -35,7 +35,11 @@
                         {% if current_user.is_authenticated %}
                             {% if current_user.has_role('admin') %}
                                 <div>
+									{% if feedback.reviewed %}
+										<button class="btn btn-secondary" disabled>Reviewed on {{feedback.review_timestamp.strftime('%B %d, %Y')}}</button>
+									{% else %}
                                     <a href="{{ url_for('mark_reviewed', feedback_id=feedback.id) }}" class="btn btn-secondary">Mark as Reviewed</a>
+									{% endif %}
                                 </div>
                             {% elif current_user.id == feedback.user_id %}
                                 <div>

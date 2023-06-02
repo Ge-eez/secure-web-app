@@ -19,7 +19,7 @@ app = Flask(__name__)
 app.config["SECURITY_URL_PREFIX"] = "/"
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
-app.config["SECURITY_PASSWORD_SALT"] = "my_precious_two"
+app.config["SECURITY_PASSWORD_SALT"] = os.getenv("SECURITY_PASSWORD_SALT")
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
 app.config["SECURITY_REGISTERABLE"] = True
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
@@ -178,7 +178,7 @@ def feedback(feedback_id=None):
     return render_template("feedback.html", feedback=feedback)
 
 
-@app.route("/mark_reviewed/<int:feedback_id>", methods=["POST"])
+@app.route("/mark_reviewed/<int:feedback_id>", methods=["GET"])
 @roles_required(
     "admin"
 )  # ensure only users with the 'admin' role can access this route
