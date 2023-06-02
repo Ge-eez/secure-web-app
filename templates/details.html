@@ -25,6 +25,13 @@
                                 No attachment provided.
                             {% endif %}
                         </div><!--//subheadline-->
+						<div class="subheadline mb-4">
+							{% if feedback.reviewed %}
+                                Reviewed
+                            {% else %}
+                                Pending Review
+                            {% endif %}
+                        </div><!--//subheading-->
                         {% if current_user.is_authenticated %}
                             {% if current_user.has_role('admin') %}
                                 <div>

@@ -17,12 +17,19 @@
                 <td>
                     <ul>
                     {% for feedback in user.feedbacks %}
-                        <li>{{ feedback.title }}: {{ feedback.content }}</li>
+                        <li>
+                          <a href= "details/{{feedback.id}}">{{ feedback.title }}</a>
+                        </li>
                     {% endfor %}
                     </ul>
                 </td>
                 <td>
+
+                {% if user.active %}
                     <a href="{{ url_for('disable_user', user_id=user.id) }}" class="btn btn-danger">Disable</a>
+                  {% else %}
+                   DISABLED
+                {% endif %}
                 </td>
             </tr>
         {% endfor %}
