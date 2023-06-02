@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Page and Pen Hub - Flask based book review site</title>
+    <title>Community Feedback - Flask based feedback submission site</title>
 
     <!-- Meta -->
     <meta charset="utf-8">
@@ -41,8 +41,8 @@
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <a class="nav-link" href="{{url_for('feedback')}}">Add Feedback</a>
-                    {% if current_user.role == "admin" %}
-                      <a class="nav-link" href="{{ url_for('users') }}">Users</a>
+                    {% if current_user.has_role('admin') %}
+                      <a class="nav-link" href="{{ url_for('moderator') }}">Moderator</a>
                     {% endif %}
                     <a class="nav-link" href="{{url_for('security.logout')}}">Logout</a>
                 </div>

@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 
-from flask import Flask, flash, redirect, render_template, request, url_for
+from flask import Flask, flash, redirect, render_template, request, url_for, abort
 from flask_migrate import Migrate
 from flask_security import (Security, SQLAlchemyUserDatastore, auth_required,
                             current_user, roles_required)
@@ -33,10 +33,7 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 # Create the directory if it doesn't exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-
 db = SQLAlchemy(app)
-
-
 migrate = Migrate(app, db)
 User, Feedback, Role = init_models(db)
 
@@ -46,9 +43,13 @@ Session(app)
 
 ALLOWED_EXTENSIONS = {"txt", "pdf", "png", "jpg", "jpeg", "gif"}
 
-
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def log_suspicious_activity(ip_address):
+    with open('suspicious_activity.log', 'a') as log_file:
+        log_file.write(f'Suspicious activity detected from IP: {ip_address}\n')
+
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -174,6 +175,10 @@ def feedback(feedback_id=None):
 
             db.session.commit()
             return redirect(url_for("home"))
+        else:
+            if form.honeypot.data:
+                log_suspicious_activity(request.remote_addr)
+            flash('Form validation error!', 'error')
 
     return render_template("feedback.html", feedback=feedback)
 
@@ -241,3 +246,11 @@ def disable_user(user_id):
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template("404.html"), 404
+
+@app.route("/admin")
+def fake_admin():
+    # Log this access as it's likely to be a malicious user
+    # You could potentially block their IP address, add it to a watchlist, etc.
+    log_suspicious_activity(request.remote_addr)
+    abort(404)  # give a 'not found' response
+

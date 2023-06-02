@@ -15,6 +15,11 @@
             <label for="attachment">Attachment:</label>
             <input type="file" id="attachment" name="attachment" class="form-control">
         </div>
+        <!-- The honeypot field - hidden from humans, visible to bots -->
+        <div style="display: none;">
+            <label for="honeypot">Do not fill out this field</label>
+            <input type="text" id="honeypot" name="honeypot" class="form-control">
+        </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>

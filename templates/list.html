@@ -6,8 +6,8 @@
 
   <div class="row mt-5">
       <div class="col-md-9 col-sm-12">
-        {% if book_not_found %}
-          <div class="section-intro text-center single-col-max mx-auto mb-5">The book you're looking for <span class='text-danger'>doesn't</span> exist.</div>
+        {% if feedback_not_found %}
+          <div class="section-intro text-center single-col-max mx-auto mb-5">The feedback you're looking for <span class='text-danger'>doesn't</span> exist.</div>
         {% else %}
         <table class="table .list">
           <thead>
@@ -15,6 +15,7 @@
               <th scope="col">Title</th>
               <th scope="col">Author</th>
               <th scope="col">Details</th>
+              <th scope="col">Review Status</th>
             </tr>
           </thead>
           <tbody>
@@ -23,6 +24,13 @@
               <td>{{item.title}}</td>
               <td>{{item.user.username}}</td>
               <td><a href= "details/{{item.id}}">Details</a></td>
+              <td>
+                {% if item.reviewed %}
+                    Reviewed
+                {% else %}
+                    Pending Review
+                {% endif %}
+            </td>
             </tr>
             {% endfor %}
           </tbody>
