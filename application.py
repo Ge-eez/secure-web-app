@@ -82,7 +82,7 @@ def home():
 
         try:
             lower_query = "%{}%".format(query.lower())
-            if current_user.role == "admin":
+            if current_user.has_role == "admin":
                 result = (
                     db.session.query(Feedback)
                     .filter(
@@ -254,3 +254,31 @@ def fake_admin():
     log_suspicious_activity(request.remote_addr)
     abort(404)  # give a 'not found' response
 
+def create_admin_user():
+    with app.app_context():
+        # Check if the role and user already exist
+        admin_role = Role.query.filter_by(name='admin').first()
+        admin_user = User.query.filter_by(email='admin@example.com').first()
+
+        # Create the role and user if they don't exist
+        if admin_role is None:
+            admin_role = Role(name='admin', description='Administrator')
+            db.session.add(admin_role)
+
+        if admin_user is None:
+            admin_user = User(
+                email='admin@example.com',
+                password=os.getenv("ADMIN_PASSWORD"),
+                roles=[admin_role],
+                username="Admin",
+                active=True
+            )
+            user_datastore.add_role_to_user(admin_user, admin_role)
+            db.session.add(admin_user)
+
+        db.session.commit()
+
+if __name__ == '__main__':
+    db.create_all()  # This will create the tables for your models
+    create_admin_user()
+    app.run(debug=True)
