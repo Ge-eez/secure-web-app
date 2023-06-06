@@ -82,7 +82,7 @@ def home():
 
         try:
             lower_query = "%{}%".format(query.lower())
-            if current_user.has_role == "admin":
+            if current_user.has_role("admin"):
                 result = (
                     db.session.query(Feedback)
                     .filter(
