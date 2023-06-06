@@ -1,0 +1,7 @@
+services:
+- type: web
+  name: secure-web-app
+  env: python
+  buildCommand: python -m pip install --upgrade pip && pip install -r requirements.txt
+  startCommand: gunicorn app:app
+  runtime: python3.9.7
