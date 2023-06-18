@@ -21,6 +21,7 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 app.config["SECURITY_PASSWORD_SALT"] = os.getenv("SECURITY_PASSWORD_SALT")
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
+app.config["SESSION_COOKIE_SECURE"] = True
 app.config["SECURITY_REGISTERABLE"] = True
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16MB
