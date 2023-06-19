@@ -43,7 +43,7 @@ user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore, register_form=ExtendedRegisterForm)
 Session(app)
 
-ALLOWED_EXTENSIONS = {"txt", "pdf", "png", "jpg", "jpeg", "gif"}
+ALLOWED_EXTENSIONS = {"pdf", "png"}
 
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -156,7 +156,7 @@ def feedback(feedback_id=None):
                 file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
             else:
                 flash(
-                    "File not allowed. Please upload a file of type: txt, pdf, png, jpg, jpeg, or gif.",
+                    "File not allowed. Please upload a file of type: pdf, png.",
                     "error",
                 )
                 return redirect(request.url)
