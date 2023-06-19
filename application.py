@@ -50,6 +50,7 @@ Session(app)
 def allowed_file(file):
     # Here, we first ensure the file has a .pdf extension
     if not "." in file.filename or file.filename.rsplit(".", 1)[1].lower() != "pdf":
+        flash("Unsupported filetype. Only PDF files are allowed.", "error")
         return False
 
     # Next, we check the mime type of the file to ensure it's a PDF
