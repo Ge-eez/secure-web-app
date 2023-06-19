@@ -26,6 +26,8 @@ app.config["SECURITY_REGISTERABLE"] = True
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16MB
 app.config["SECURITY_CONFIRMABLE"] = False
+app.config['SECURITY_SEND_REGISTER_EMAIL'] = False
+
 
 # absolute path to the directory that will hold the uploaded files
 UPLOAD_FOLDER = os.path.abspath(os.getcwd()) + "/uploads"
