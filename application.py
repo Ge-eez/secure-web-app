@@ -12,6 +12,7 @@ from werkzeug.utils import secure_filename
 from flask_session import Session
 from forms import ExtendedRegisterForm, FeedbackForm
 from models import init_models
+import magic
 
 app = Flask(__name__)
 
@@ -45,10 +46,20 @@ user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore, register_form=ExtendedRegisterForm)
 Session(app)
 
-ALLOWED_EXTENSIONS = {"pdf", "png"}
 
-def allowed_file(filename):
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+def allowed_file(file):
+    # Here, we first ensure the file has a .pdf extension
+    if not "." in file.filename or file.filename.rsplit(".", 1)[1].lower() != "pdf":
+        return False
+
+    # Next, we check the mime type of the file to ensure it's a PDF
+    file_mime_type = magic.from_buffer(file.read(1024), mime=True)
+    file.seek(0)  # reset the cursor to the beginning of the file
+    if file_mime_type != "application/pdf":
+        flash("Unsupported filetype. Only PDF files are allowed.", "error")
+        return False
+
+    return True
 
 def log_suspicious_activity(ip_address):
     with open('suspicious_activity.log', 'a') as log_file:
@@ -157,10 +168,6 @@ def feedback(feedback_id=None):
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
             else:
-                flash(
-                    "File not allowed. Please upload a file of type: pdf, png.",
-                    "error",
-                )
                 return redirect(request.url)
             if feedback_id and feedback:
                 # Update the existing feedback
